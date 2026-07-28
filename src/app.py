@@ -12,11 +12,18 @@ from __future__ import annotations
 
 import argparse
 import json
+import mimetypes
 import os
 import sys
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
+from urllib.parse import urlparse
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv():
+        return False
 
 # Cho phép chạy trực tiếp bằng: python src/app.py
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -175,6 +182,180 @@ def run_baseline_chatbot(user_query: str, provider: Any) -> dict[str, Any]:
         "steps": [],
         "final_answer": response,
     }
+
+
+def build_web_match_response(payload):
+    """Run Cupid tools for the browser UI and return JSON-serializable data."""
+    user_id = (payload.get("user_id") or "web_demo").strip()
+    age = int(payload["age"])
+    limit = int(payload.get("limit") or 3)
+    min_age = payload.get("min_age")
+    max_age = payload.get("max_age")
+    saved_profile = AVAILABLE_TOOLS["save_user_profile"](
+        user_id=user_id,
+        age=age,
+        location=payload["location"],
+        relationship_intent=payload["relationship_intent"],
+        interests=payload["interests"],
+        values=payload["values"],
+    )
+    matches = AVAILABLE_TOOLS["find_demo_matches"](
+        user_id=user_id,
+        limit=limit,
+        min_age=int(min_age) if min_age not in (None, "") else None,
+        max_age=int(max_age) if max_age not in (None, "") else None,
+    )
+    reports = [
+        AVAILABLE_TOOLS["generate_match_explanation"](
+            user_id=user_id,
+            candidate_user_id=match["user_id"],
+        )
+        for match in matches["matches"]
+    ]
+    return {
+        "profile": saved_profile["profile"],
+        "matches": matches["matches"],
+        "reports": reports,
+        "trace": [
+            {
+                "thought": "Cần lưu và chuẩn hóa hồ sơ trước khi ghép đôi.",
+                "action": "save_user_profile",
+                "observation": saved_profile,
+            },
+            {
+                "thought": "Hồ sơ đã sẵn sàng, cần tìm và xếp hạng ứng viên.",
+                "action": "find_demo_matches",
+                "observation": matches,
+            },
+            {
+                "thought": "Cần giải thích minh bạch vì sao từng ứng viên phù hợp.",
+                "action": "generate_match_explanation",
+                "observation": {"reports": reports},
+            },
+        ],
+        "disclaimer": "Hồ sơ và điểm số chỉ phục vụ demo lab.",
+    }
+
+
+def build_web_compare_response(payload):
+    p1 = payload.get("person1", {})
+    p2 = payload.get("person2", {})
+
+    saved_p1 = AVAILABLE_TOOLS["save_user_profile"](
+        user_id="person1",
+        name=p1.get("name", "Người 1"),
+        age=int(p1.get("age", 20)),
+        location=p1.get("location", "Unknown"),
+        relationship_intent=p1.get("relationship_intent", "long_term"),
+        interests=p1.get("interests", []),
+        values=p1.get("values", []),
+    )
+
+    saved_p2 = AVAILABLE_TOOLS["save_user_profile"](
+        user_id="person2",
+        name=p2.get("name", "Người 2"),
+        age=int(p2.get("age", 20)),
+        location=p2.get("location", "Unknown"),
+        relationship_intent=p2.get("relationship_intent", "long_term"),
+        interests=p2.get("interests", []),
+        values=p2.get("values", []),
+    )
+
+    report = AVAILABLE_TOOLS["generate_match_explanation"](
+        user_id="person1",
+        candidate_user_id="person2",
+    )
+
+    return {
+        "report": report,
+        "trace": [
+            {
+                "thought": "Đã nhận thông tin người 1. Cần lưu hồ sơ người 1.",
+                "action": "save_user_profile(user_id='person1')",
+                "observation": saved_p1,
+            },
+            {
+                "thought": "Đã nhận thông tin người 2. Cần lưu hồ sơ người 2.",
+                "action": "save_user_profile(user_id='person2')",
+                "observation": saved_p2,
+            },
+            {
+                "thought": "Đã lưu 2 hồ sơ. Cần phân tích và giải thích độ tương thích giữa 2 người.",
+                "action": "generate_match_explanation(user_id='person1', candidate_user_id='person2')",
+                "observation": report,
+            },
+        ],
+        "disclaimer": "Đã tính toán độ tương thích qua Tool ở Backend.",
+    }
+
+
+def build_web_chat_response(payload):
+    """Xử lý API chat, gọi OpenAI Provider."""
+    user_query = payload.get("message", "").strip()
+    if not user_query:
+        raise ValueError("Tin nhắn không được để trống.")
+    
+    provider = get_llm_provider("openai")
+    response = provider.generate(user_query, system_prompt=CHATBOT_BASELINE_PROMPT)
+    return {"reply": response}
+
+class CupidWebHandler(SimpleHTTPRequestHandler):
+    """Serve the static UI and a tiny JSON API without adding a web framework."""
+
+    def __init__(self, *args, **kwargs):
+        root = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "web")
+        super().__init__(*args, directory=root, **kwargs)
+
+    def _send_json(self, status, data):
+        body = json.dumps(data, ensure_ascii=False).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        path = urlparse(self.path).path
+        if path == "/api/test-cases":
+            self._send_json(200, {"test_cases": load_test_cases()})
+            return
+        if path == "/":
+            self.path = "/index.html"
+        return super().do_GET()
+
+    def do_POST(self):
+        path = urlparse(self.path).path
+        if path == "/api/matches":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                self._send_json(200, build_web_match_response(payload))
+            except Exception as exc:
+                self._send_json(400, {"error": str(exc)})
+        elif path == "/api/compare":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                self._send_json(200, build_web_compare_response(payload))
+            except Exception as exc:
+                self._send_json(400, {"error": str(exc)})
+        elif path == "/api/chat":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                self._send_json(200, build_web_chat_response(payload))
+            except Exception as exc:
+                self._send_json(400, {"error": str(exc)})
+        else:
+            self._send_json(404, {"error": "Not found"})
+
+
+def run_web_server(port=8000):
+    mimetypes.add_type("text/css", ".css")
+    mimetypes.add_type("application/javascript", ".js")
+    server = ThreadingHTTPServer(("127.0.0.1", port), CupidWebHandler)
+    print(f"🌐 Cupid Agent UI: http://127.0.0.1:{port}")
+    server.serve_forever()
 
 
 def _build_agent_input(
@@ -369,14 +550,20 @@ def build_argument_parser() -> argparse.ArgumentParser:
         choices=["openai", "gemini", "anthropic", "openrouter", "mock"],
         help="Ghi đè LLM_PROVIDER cho lần chạy này.",
     )
+    selection.add_argument("--web", action="store_true", help="Chạy web server.")
+    parser.add_argument("--port", type=int, default=8000, help="Cổng chạy web server.")
     return parser
 
 
 def main() -> int:
     args = build_argument_parser().parse_args()
+    if getattr(args, "web", False):
+        run_web_server(getattr(args, "port", 8000))
+        return 0
     provider = get_llm_provider(args.provider)
     model_name = getattr(provider, "model_name", "Offline Mock Mode")
     tests = load_test_cases()
+
 
     print("==================================================")
     print("💘 CUPID AGENT - DYNAMIC ROUTER & REACT LOOP")

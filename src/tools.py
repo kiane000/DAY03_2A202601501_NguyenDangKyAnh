@@ -59,7 +59,7 @@ def _return_error_message(
     return safe_tool
 
 
-def _load_demo_profiles(path: Path = DEMO_PROFILE_PATH) -> tuple[dict[str, Any], ...]:
+def _load_demo_profiles(path: Path = DEMO_PROFILE_PATH) -> list[dict[str, Any]]:
     """Đọc và kiểm tra dữ liệu ứng viên giả lập ngay khi module được import."""
     try:
         with path.open("r", encoding="utf-8") as file:
@@ -115,8 +115,7 @@ def _load_demo_profiles(path: Path = DEMO_PROFILE_PATH) -> tuple[dict[str, Any],
                 "values": list(raw_profile["values"]),
             }
         )
-    return tuple(profiles)
-
+    return profiles
 
 DEMO_PROFILES = _load_demo_profiles()
 
@@ -211,6 +210,8 @@ def _get_candidate(candidate_user_id: str) -> dict[str, Any]:
     for profile in DEMO_PROFILES:
         if profile["user_id"] == candidate_user_id:
             return profile
+    if candidate_user_id in _USER_PROFILE_STORE:
+        return _USER_PROFILE_STORE[candidate_user_id]
     raise ValueError(f"Không tìm thấy ứng viên '{candidate_user_id}'.")
 
 
@@ -267,6 +268,7 @@ def save_user_profile(
     interests: list[str] | str,
     values: list[str] | str,
     user_id: str,
+    name: str = "Unknown",
 ) -> ToolResult:
     """
     Lưu hồ sơ tối thiểu của người đang sử dụng Cupid Agent vào bộ nhớ phiên.
@@ -297,6 +299,7 @@ def save_user_profile(
 
     profile = {
         "user_id": user_id.strip(),
+        "name": name.strip() if isinstance(name, str) else "Unknown",
         "age": age,
         "location": " ".join(location.strip().split()),
         "relationship_intent": _normalize_intent(relationship_intent),
@@ -310,6 +313,19 @@ def save_user_profile(
         "values": list(profile["values"]),
     }
     _USER_PROFILE_STORE[profile["user_id"]] = stored_profile
+
+    # Ghi dữ liệu vào file demo_profiles.json và cập nhật DEMO_PROFILES
+    global DEMO_PROFILES
+    # Lọc bỏ profile cũ nếu trùng user_id để tránh lỗi duplicate
+    DEMO_PROFILES = [p for p in DEMO_PROFILES if p["user_id"] != profile["user_id"]]
+    DEMO_PROFILES.append(stored_profile)
+    
+    try:
+        with DEMO_PROFILE_PATH.open("w", encoding="utf-8") as f:
+            json.dump(DEMO_PROFILES, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Lỗi ghi file demo_profiles.json: {e}")
+
     return {
         "success": True,
         "matching_ready": True,
@@ -530,6 +546,7 @@ TOOL_SCHEMAS = [
                         "maxItems": 10,
                     },
                     "user_id": {"type": "string", "minLength": 1},
+                    "name": {"type": "string"},
                 },
                 "required": [
                     "user_id",

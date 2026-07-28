@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupid Agent 💘 - AI Matchmaking</title>
+    <!-- Modern Font: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-elements">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <header class="glass-nav">
+        <div class="nav-content">
+            <div class="logo">
+                <i data-lucide="heart-pulse" class="neon-icon"></i>
+                <h1>Cupid<span>Agent</span></h1>
+            </div>
+            <nav class="tabs">
+                <button class="tab-btn active" data-target="matches-view">Tìm Ứng Viên</button>
+                <button class="tab-btn" data-target="compare-view">So Sánh Cặp Đôi</button>
+                <button class="tab-btn" data-target="chat-view">Hỏi Đáp Cupid</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- TÌM ỨNG VIÊN VIEW -->
+        <section id="matches-view" class="view-section active">
+            <div class="split-layout">
+                <!-- Cột trái: Form nhập -->
+                <div class="glass-panel panel-left">
+                    <div class="panel-header">
+                        <h2>Hồ Sơ Của Bạn</h2>
+                        <p>Hãy để AI tìm kiếm nửa kia hoàn hảo.</p>
+                    </div>
+                    
+                    <form id="match-form">
+                        <div class="input-group">
+                            <label><i data-lucide="user"></i> Tên định danh (Mã User)</label>
+                            <input type="text" id="m_user_id" value="nguoi_dung_moi" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="input-group">
+                                <label><i data-lucide="calendar"></i> Tuổi</label>
+                                <input type="number" id="m_age" value="25" min="18" max="100" required>
+                            </div>
+                            <div class="input-group">
+                                <label><i data-lucide="map-pin"></i> Vị trí</label>
+                                <input type="text" id="m_location" value="Hà Nội" required>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label><i data-lucide="target"></i> Mong muốn mối quan hệ</label>
+                            <select id="m_intent">
+                                <option value="casual_dating">Hẹn hò tìm hiểu (Casual Dating)</option>
+                                <option value="long_term">Mối quan hệ lâu dài (Long term)</option>
+                                <option value="marriage">Tiến tới hôn nhân (Marriage)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label><i data-lucide="music"></i> Sở thích (Cách nhau bởi dấu phẩy)</label>
+                            <input type="text" id="m_interests" value="đọc sách, du lịch, âm nhạc">
+                        </div>
+
+                        <div class="input-group">
+                            <label><i data-lucide="heart"></i> Giá trị sống (Cách nhau bởi dấu phẩy)</label>
+                            <input type="text" id="m_values" value="chân thành, phát triển bản thân">
+                        </div>
+
+                        <button type="submit" class="btn-primary" id="btn-find-matches">
+                            <i data-lucide="search"></i> Tìm Ứng Viên Bằng AI
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Cột phải: Kết quả -->
+                <div class="glass-panel panel-right">
+                    <div class="panel-header">
+                        <h2>Kết Quả Ghép Đôi</h2>
+                        <p id="matches-status">Điền thông tin và bấm tìm kiếm để bắt đầu...</p>
+                    </div>
+
+                    <div id="loading-spinner" class="hidden">
+                        <div class="heartbeat">
+                            <i data-lucide="heart"></i>
+                        </div>
+                        <p>Cupid đang phân tích hàng ngàn hồ sơ...</p>
+                    </div>
+
+                    <div id="matches-container" class="cards-list">
+                        <!-- Thẻ kết quả sẽ được chèn vào đây -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SO SÁNH CẶP ĐÔI VIEW -->
+        <section id="compare-view" class="view-section">
+            <div class="panel-header text-center">
+                <h2>Phân Tích Độ Tương Thích</h2>
+                <p>Nhập thông tin của 2 người để xem Cupid đánh giá như thế nào.</p>
+            </div>
+            
+            <form id="compare-form" class="compare-layout">
+                <!-- Người 1 -->
+                <div class="glass-panel person-card">
+                    <h3>Người Thứ Nhất</h3>
+                    <div class="input-group">
+                        <label>Tên</label>
+                        <input type="text" id="c1_name" value="Alice" required>
+                    </div>
+                    <div class="row">
+                        <div class="input-group">
+                            <label>Tuổi</label>
+                            <input type="number" id="c1_age" value="24" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Vị trí</label>
+                            <input type="text" id="c1_location" value="TP.HCM">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Sở thích</label>
+                        <input type="text" id="c1_interests" value="cafe, nhiếp ảnh">
+                    </div>
+                    <div class="input-group">
+                        <label>Giá trị</label>
+                        <input type="text" id="c1_values" value="tự do, sáng tạo">
+                    </div>
+                </div>
+
+                <!-- Nút Compare ở giữa -->
+                <div class="compare-action">
+                    <button type="submit" class="btn-compare" id="btn-compare">
+                        <div class="heart-pulse-btn">
+                            <i data-lucide="zap"></i>
+                        </div>
+                        <span>Phân Tích</span>
+                    </button>
+                </div>
+
+                <!-- Người 2 -->
+                <div class="glass-panel person-card">
+                    <h3>Người Thứ Hai</h3>
+                    <div class="input-group">
+                        <label>Tên</label>
+                        <input type="text" id="c2_name" value="Bob" required>
+                    </div>
+                    <div class="row">
+                        <div class="input-group">
+                            <label>Tuổi</label>
+                            <input type="number" id="c2_age" value="27" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Vị trí</label>
+                            <input type="text" id="c2_location" value="Đà Lạt">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Sở thích</label>
+                        <input type="text" id="c2_interests" value="du lịch, phượt">
+                    </div>
+                    <div class="input-group">
+                        <label>Giá trị</label>
+                        <input type="text" id="c2_values" value="phiêu lưu, gia đình">
+                    </div>
+                </div>
+            </form>
+
+            <!-- Loading & Kết quả Compare -->
+            <div id="compare-loading" class="hidden loading-center">
+                <div class="heartbeat">
+                    <i data-lucide="activity"></i>
+                </div>
+                <p>Đang quét tần số tương thích...</p>
+            </div>
+
+            <div id="compare-result" class="glass-panel result-panel hidden">
+                <!-- Nội dung report sẽ hiển thị ở đây -->
+            </div>
+        </section>
+
+        <!-- CHATBOT VIEW -->
+        <section id="chat-view" class="view-section">
+            <div class="chat-container glass-panel">
+                <div class="chat-header">
+                    <h2><i data-lucide="bot"></i> Cupid AI Assistant</h2>
+                    <p>Hỏi tôi bất cứ điều gì về tình yêu và các ứng viên.</p>
+                </div>
+                
+                <div class="chat-messages" id="chat-messages">
+                    <div class="message bot">
+                        <div class="msg-avatar"><i data-lucide="bot"></i></div>
+                        <div class="msg-bubble">Xin chào! Mình là Cupid Agent. Mình có thể giúp gì cho bạn hôm nay?</div>
+                    </div>
+                </div>
+
+                <form id="chat-form" class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Nhập câu hỏi của bạn..." autocomplete="off" required>
+                    <button type="submit" class="btn-send" id="btn-send">
+                        <i data-lucide="send"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Template cho một Match Card (ẩn) -->
+    <template id="match-card-template">
+        <div class="match-card">
+            <div class="card-header">
+                <div class="avatar">
+                    <i data-lucide="user-check"></i>
+                </div>
+                <div class="info">
+                    <h3 class="name">Tên ứng viên</h3>
+                    <span class="location"><i data-lucide="map-pin"></i> Vị trí</span>
+                </div>
+                <div class="score-ring">
+                    <svg viewBox="0 0 36 36" class="circular-chart pink">
+                        <path class="circle-bg"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path class="circle"
+                        stroke-dasharray="80, 100"
+                        d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <text x="18" y="20.35" class="percentage">80</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="ai-analysis">
+                <div class="ai-badge"><i data-lucide="bot"></i> AI Nhận Xét</div>
+                <div class="analysis-content">
+                    <p class="strengths"><strong>Điểm chung:</strong> <span>...</span></p>
+                    <p class="differences"><strong>Lưu ý:</strong> <span>...</span></p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="app.js"></script>
+    <script>
+        // Kích hoạt icon Lucide
+        lucide.createIcons();
+    </script>
+</body>
+</html>
