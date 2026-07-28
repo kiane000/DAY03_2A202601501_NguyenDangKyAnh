@@ -7,11 +7,11 @@
 
 | Tiêu chí | Điểm (1-5) | Lý do đánh giá |
 | :--- | :---: | :--- |
-| 🧠 **Multi-step Reasoning** | `4/5` | Cần suy luận từ tra cứu thời tiết đến chọn trang phục. |
-| 🛠️ **Tool Interaction** | `5/5` | Cần tra cứu dữ liệu thời gian thực qua API thời tiết/chuyến bay. |
-| 🔀 **Dynamic Decision** | `4/5` | Kết quả bước trước quyết định hành động bước sau. |
-| ⏳ **Long Horizon** | `3/5` | Quy trình gồm 2-3 bước xử lý ngắn. |
-| **TỔNG ĐIỂM FIT** | **16/20** | **KẾT LUẬN: BÀI TOÁN RẤT NÊN DÙNG REACT AGENT!** |
+| 🧠 **Multi-step Reasoning** | `5/5` | Cần đọc hồ sơ, so khớp sở thích, giá trị sống, mục tiêu hẹn hò và giải thích lý do tương thích. |
+| 🛠️ **Tool Interaction** | `4/5` | Cần tra cứu hồ sơ người dùng, tính điểm tương thích và có thể gợi ý hoạt động hẹn hò; chưa nhất thiết cần dữ liệu thời gian thực. |
+| 🔀 **Dynamic Decision** | `5/5` | Kết quả phân tích hồ sơ quyết định nên ghép với ai, có từ chối hay cảnh báo an toàn không, và nên gợi ý bước tiếp theo thế nào. |
+| ⏳ **Long Horizon** | `4/5` | Quy trình thường gồm nhiều bước: lấy hồ sơ, lọc ứng viên, chấm điểm, xếp hạng, giải thích và kiểm tra guardrail riêng tư. |
+| **TỔNG ĐIỂM FIT** | **18/20** | **KẾT LUẬN: CUPID AGENT RẤT PHÙ HỢP ĐỂ DÙNG REACT AGENT!** |
 
 ---
 
