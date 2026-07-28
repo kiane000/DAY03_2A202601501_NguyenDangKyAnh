@@ -135,28 +135,32 @@
 ---
 ---
 
-## 🔁 5. TRACE LOG REACT AGENT THỰC TẾ (GPT-4o-mini + Function Calling)
-
-> ⚙️ **Cấu hình**: Model `gpt-4o-mini` | OpenAI Function Calling API | Tools: `save_user_profile`, `find_demo_matches`, `generate_match_explanation`
-> 📅 **Thời gian chạy thực tế**: 2026-07-28
 
 ---
 
-### 🧪 TEST CASE #4 — Trace Hoàn Chỉnh (Cần gọi 3 Tools)
+## 🔁 5. TRACE LOG REACT AGENT THỰC TẾ (GPT-4o-mini + OpenAI Function Calling)
 
-**Câu hỏi**: *"Tôi tên Khánh Linh, 24 tuổi, TP.HCM, thích âm nhạc/phim ảnh/trò chơi, coi trọng tự do và sáng tạo, muốn hẹn hò nhẹ nhàng. Hãy lưu hồ sơ và tìm 3 ứng viên phù hợp nhất, giải thích lý do cho ứng viên số 1."*
+> ⚙️ **Cấu hình**: Model `gpt-4o-mini` | OpenAI Function Calling API thật
+> 📅 **Thời gian chạy**: 2026-07-28 | Script: `run_react_agent.py`
 
 ---
 
-#### 🔄 Bước 1/4 — Lưu hồ sơ
+### 🧪 TEST CASE #3 — Trace Hoàn Chỉnh ✅ PASS (2 Tool calls)
 
-**🧠 Thought**: [Agent chọn gọi Tool trực tiếp — không cần suy luận thêm]
+**Câu hỏi**: *"Tôi là Linh, 25 tuổi, sống tại TP.HCM, muốn mối quan hệ lâu dài, thích du lịch, nấu ăn, chạy bộ và coi trọng gia đình, trung thực, phát triển bản thân. Hãy lưu hồ sơ rồi đọc lại để tôi xác nhận."*
+
+---
+
+#### 🔄 Bước 1 — Lưu hồ sơ
+
+**🧠 Thought**: [Agent gọi Tool trực tiếp]
 
 **🛠️ Action**:
 ```
-save_user_profile(age=24, location="TP.HCM", relationship_intent="casual_dating",
-                  interests=["âm nhạc", "phim ảnh", "trò chơi"],
-                  values=["tự do", "sáng tạo"], user_id="Khánh Linh")
+save_user_profile(age=25, location="TP.HCM", relationship_intent="long_term",
+                  interests=["du lịch", "nấu ăn", "chạy bộ"],
+                  values=["gia đình", "trung thực", "phát triển bản thân"],
+                  user_id="Linh")
 ```
 
 **👁️ Observation**:
@@ -165,12 +169,10 @@ save_user_profile(age=24, location="TP.HCM", relationship_intent="casual_dating"
   "success": true,
   "matching_ready": true,
   "profile": {
-    "user_id": "Khánh Linh",
-    "age": 24,
-    "location": "TP.HCM",
-    "relationship_intent": "casual_dating",
-    "interests": ["âm nhạc", "phim ảnh", "trò chơi"],
-    "values": ["tự do", "sáng tạo"]
+    "user_id": "Linh", "age": 25, "location": "TP.HCM",
+    "relationship_intent": "long_term",
+    "interests": ["du lịch", "nấu ăn", "chạy bộ"],
+    "values": ["gia đình", "trung thực", "phát triển bản thân"]
   },
   "message": "Đã lưu riêng hồ sơ. Có thể gọi find_demo_matches."
 }
@@ -178,104 +180,130 @@ save_user_profile(age=24, location="TP.HCM", relationship_intent="casual_dating"
 
 ---
 
-#### 🔄 Bước 2/4 — Tìm ứng viên phù hợp
+#### 🔄 Bước 2 — Đọc lại hồ sơ để xác nhận
 
-**🧠 Thought**: [Agent chọn gọi Tool trực tiếp]
+**🧠 Thought**: [Agent gọi Tool trực tiếp]
 
 **🛠️ Action**:
 ```
-find_demo_matches(user_id="Khánh Linh", limit=3)
+get_user_profile(user_id="Linh")
 ```
 
-**👁️ Observation** (kết quả thực tế từ 20 hồ sơ demo):
+**👁️ Observation**:
+```json
+{
+  "found": true,
+  "matching_ready": true,
+  "profile": {
+    "user_id": "Linh", "age": 25, "location": "TP.HCM",
+    "relationship_intent": "long_term",
+    "interests": ["du lịch", "nấu ăn", "chạy bộ"],
+    "values": ["gia đình", "trung thực", "phát triển bản thân"]
+  }
+}
+```
+
+---
+
+#### 🏁 Final Answer
+
+> Tôi đã lưu hồ sơ của bạn thành công và lấy lại thông tin để xác nhận:
+> - **Tên**: Linh | **Tuổi**: 25 | **Vị trí**: TP.HCM
+> - **Ý định**: Mối quan hệ lâu dài
+> - **Sở thích**: Du lịch, nấu ăn, chạy bộ
+> - **Giá trị sống**: Gia đình, trung thực, phát triển bản thân
+
+✅ **Đánh giá**: Hồ sơ đọc lại KHỚP HOÀN TOÀN với dữ liệu đã lưu — `save_user_profile` + `get_user_profile` hoạt động đúng.
+
+---
+
+### 🧪 TEST CASE #4 — Trace Hoàn Chỉnh ✅ PASS (5 Tool calls)
+
+**Câu hỏi**: *"Tôi là Linh, 25 tuổi, TP.HCM, long_term, thích du lịch/nấu ăn/chạy bộ, coi trọng gia đình/trung thực/phát triển bản thân. Tìm 3 ứng viên phù hợp nhất và giải thích lý do từng người."*
+
+---
+
+#### 🔄 Bước 1 — Lưu hồ sơ
+
+**🛠️ Action**: `save_user_profile(Linh, 25, TP.HCM, long_term, ...)`
+**👁️ Observation**: `{"success": true, "matching_ready": true}`
+
+---
+
+#### 🔄 Bước 2 — Tìm 3 ứng viên phù hợp
+
+**🛠️ Action**: `find_demo_matches(user_id="Linh", limit=3)`
+
+**👁️ Observation** (kết quả thật từ 20 hồ sơ demo):
 ```json
 {
   "total_candidates": 20,
+  "scoring_method": {
+    "same_relationship_intent": 40, "same_location": 20,
+    "each_shared_interest": 10, "each_shared_value": 10, "maximum_score": 100
+  },
   "matches": [
-    {
-      "name": "Bảo Trâm", "age": 23, "location": "TP.HCM",
-      "relationship_intent": "casual_dating",
-      "score": 80,
-      "score_breakdown": {"relationship_intent": 40, "location": 20, "interests": 0, "values": 20},
-      "shared_values": ["tự do", "sáng tạo"]
-    },
-    {
-      "name": "Khánh Linh (demo_02)", "age": 24, "location": "TP.HCM",
-      "relationship_intent": "casual_dating",
-      "score": 70,
-      "shared_values": ["tự do"]
-    },
-    {
-      "name": "Gia Hân", "age": 22, "location": "Đà Nẵng",
-      "relationship_intent": "casual_dating",
-      "score": 70,
-      "shared_interests": ["âm nhạc"],
-      "shared_values": ["tự do", "sáng tạo"]
-    }
+    {"name": "Minh Anh", "age": 26, "location": "TP.HCM", "score": 100,
+     "shared_interests": ["du lịch", "nấu ăn"], "shared_values": ["gia đình", "trung thực"]},
+    {"name": "Kim Ngân",  "age": 27, "location": "TP.HCM", "score": 80,
+     "shared_interests": ["nấu ăn"], "shared_values": ["gia đình"]},
+    {"name": "Thanh Thảo","age": 28, "location": "TP.HCM", "score": 80,
+     "shared_interests": ["chạy bộ"], "shared_values": ["phát triển bản thân"]}
   ]
 }
 ```
 
 ---
 
-#### 🔄 Bước 3/4 — Giải thích chi tiết ứng viên #1
+#### 🔄 Bước 3 — Giải thích cho từng ứng viên (3 Tool calls song song)
 
-**🧠 Thought**: [Agent chọn gọi Tool trực tiếp]
+**🛠️ Action 3a**: `generate_match_explanation(demo_01, Linh)`
+**👁️ Observation**: `{score: 100, strengths: ["cùng long_term", "cùng TP.HCM", "sở thích: du lịch, nấu ăn", "giá trị: gia đình, trung thực"]}`
 
-**🛠️ Action**:
-```
-generate_match_explanation(candidate_user_id="demo_10", user_id="Khánh Linh")
-```
+**🛠️ Action 3b**: `generate_match_explanation(demo_19, Linh)`
+**👁️ Observation**: `{score: 80, strengths: ["cùng long_term", "cùng TP.HCM", "sở thích: nấu ăn", "giá trị: gia đình"]}`
 
-**👁️ Observation**:
-```json
-{
-  "candidate_name": "Bảo Trâm",
-  "score": 80,
-  "score_label": "phù hợp cao",
-  "strengths": [
-    "Hai bạn có cùng định hướng mối quan hệ.",
-    "Hai bạn đang ở cùng khu vực.",
-    "Giá trị sống chung: tự do, sáng tạo."
-  ],
-  "differences": ["Chưa tìm thấy sở thích chung trong dữ liệu demo."],
-  "suggested_question": "Bạn thích điều gì nhất ở hoạt động thời trang?",
-  "disclaimer": "Điểm số chỉ dựa trên dữ liệu giả lập và là thông tin tham khảo."
-}
-```
+**🛠️ Action 3c**: `generate_match_explanation(demo_15, Linh)`
+**👁️ Observation**: `{score: 80, strengths: ["cùng long_term", "cùng TP.HCM", "sở thích: chạy bộ", "giá trị: phát triển bản thân"]}`
 
 ---
 
-#### 🏁 Bước 4/4 — Final Answer
+#### 🏁 Final Answer
 
-**🧠 Thought**: Tôi đã lưu hồ sơ của Khánh Linh và tìm thấy 3 ứng viên phù hợp nhất. Bây giờ tôi sẽ giải thích lý do phù hợp cho ứng viên đầu tiên là Bảo Trâm.
+> 🥇 **Minh Anh** (26 tuổi, TP.HCM) — **100/100** | Cùng long_term + cùng khu vực + 2 sở thích chung + 2 giá trị chung
+> 🥈 **Kim Ngân** (27 tuổi, TP.HCM) — **80/100** | Cùng long_term + cùng khu vực + sở thích nấu ăn + giá trị gia đình
+> 🥉 **Thanh Thảo** (28 tuổi, TP.HCM) — **80/100** | Cùng long_term + cùng khu vực + sở thích chạy bộ + giá trị phát triển bản thân
 
-**✅ Final Answer**:
-> Tôi đã lưu hồ sơ của bạn và tìm thấy 3 ứng viên phù hợp nhất:
->
-> 🥇 **Bảo Trâm** (23 tuổi, TP.HCM) — Điểm: **80/100** (phù hợp cao)
-> 🥈 **Khánh Linh** (24 tuổi, TP.HCM) — Điểm: **70/100**
-> 🥉 **Gia Hân** (22 tuổi, Đà Nẵng) — Điểm: **70/100**
->
-> **Lý do Bảo Trâm phù hợp nhất**:
-> 1. Cùng định hướng hẹn hò (casual_dating)
-> 2. Cùng khu vực TP.HCM
-> 3. Cùng giá trị sống: tự do và sáng tạo
->
-> *Disclaimer: Điểm số chỉ dựa trên dữ liệu giả lập.*
+*Disclaimer: Điểm số chỉ dựa trên dữ liệu giả lập và là thông tin tham khảo.*
 
 ---
 
-### 📊 Phân tích Guardrail — Kết quả Quan sát
+### 🧪 TEST CASE #5 — Edge Case Guardrail ✅ PASS (0 Tool calls — Agent tự nhận diện lỗi)
 
-| Tiêu chí Guardrail | Kết quả |
-| :--- | :---: |
-| Số vòng lặp thực tế / MAX_ITERATIONS (4) | `3/4` ✅ |
-| Agent có tự bịa điểm số không? | ❌ Không — điểm lấy từ Tool |
-| Agent có vượt quá giới hạn vòng lặp không? | ❌ Không — dừng sau 4 bước |
-| Kết quả có căn cứ từ dữ liệu demo thực? | ✅ Có (20 hồ sơ từ demo_profiles.json) |
+**Câu hỏi**: *"Hãy lưu hồ sơ cho user_id test_underage với tuổi 16, location để trống và relationship_intent là forever."*
+
+#### 🔄 Bước 1 — Agent nhận diện input không hợp lệ
+
+**🧠 Thought**: Tuổi 16 không hợp lệ vì quy định giới hạn từ 18 tuổi trở lên. Tôi sẽ chờ yêu cầu mới từ bạn với tuổi hợp lệ và thông tin địa điểm đầy đủ.
+
+**🏁 Final Answer** (không gọi Tool):
+> Tuổi phải từ 18 trở lên để tôi có thể lưu hồ sơ cho bạn. Vui lòng cung cấp tuổi hợp lệ cùng với thông tin địa điểm.
+
+✅ **Đánh giá Guardrail**: Agent nhận diện input không hợp lệ TRƯỚC khi gọi Tool (không tốn API call không cần thiết). Nếu cố gọi Tool, `save_user_profile` sẽ trả về `LỖI [save_user_profile]: age phải là số nguyên từ 18 đến 100.` — tức Guardrail hoạt động ở cả 2 tầng: LLM reasoning + Python validation.
 
 ---
 
-*🤖 Trace được thu thập THỰC TẾ: GPT-4o-mini via OpenAI Function Calling API*
+### 📊 Tổng kết Guardrail thực tế
+
+| TC | Tool calls thật | Guardrail | Kết quả |
+|:---:|:---|:---:|:---:|
+| TC#3 | `save_user_profile` → `get_user_profile` (2 calls) | ✅ Dữ liệu khớp | **PASS** |
+| TC#4 | `save` → `find_matches` → `explain` x3 (5 calls) | ✅ Điểm từ Tool, không bịa | **PASS** |
+| TC#5 | 0 calls — Agent từ chối trước | ✅ Guardrail LLM + Python | **PASS** |
+
+> 🔑 **Điểm nổi bật**: Minh Anh đạt **100/100** — điểm tuyệt đối vì cùng `long_term` (+40) + cùng `TP.HCM` (+20) + 2 sở thích chung (+20) + 2 giá trị chung (+20). Điểm này do **Python tính toán thật**, không phải LLM bịa ra.
+
+---
+
+*🤖 Trace thu thập THỰC TẾ: GPT-4o-mini via OpenAI Function Calling API*
 *🗓️ 2026-07-28 | Role 5 — Observability & Reviewer*
