@@ -5,8 +5,16 @@
     "age": 26,
     "location": "TP.HCM",
     "relationship_intent": "long_term",
-    "interests": ["du lịch", "nấu ăn", "nhiếp ảnh"],
-    "values": ["gia đình", "trung thực", "lòng nhân ái"]
+    "interests": [
+      "du lịch",
+      "nấu ăn",
+      "nhiếp ảnh"
+    ],
+    "values": [
+      "gia đình",
+      "trung thực",
+      "lòng nhân ái"
+    ]
   },
   {
     "user_id": "demo_02",
@@ -14,8 +22,16 @@
     "age": 24,
     "location": "TP.HCM",
     "relationship_intent": "casual_dating",
-    "interests": ["nhạc sống", "ẩm thực đường phố", "board game"],
-    "values": ["tự do", "sự ngẫu hứng", "hài hước"]
+    "interests": [
+      "nhạc sống",
+      "ẩm thực đường phố",
+      "board game"
+    ],
+    "values": [
+      "tự do",
+      "sự ngẫu hứng",
+      "hài hước"
+    ]
   },
   {
     "user_id": "demo_03",
@@ -23,8 +39,16 @@
     "age": 28,
     "location": "Hà Nội",
     "relationship_intent": "long_term",
-    "interests": ["đọc sách", "leo núi", "cà phê"],
-    "values": ["ổn định", "trung thực", "học hỏi"]
+    "interests": [
+      "đọc sách",
+      "leo núi",
+      "cà phê"
+    ],
+    "values": [
+      "ổn định",
+      "trung thực",
+      "học hỏi"
+    ]
   },
   {
     "user_id": "demo_04",
@@ -32,8 +56,16 @@
     "age": 27,
     "location": "TP.HCM",
     "relationship_intent": "marriage",
-    "interests": ["yoga", "làm bánh", "bảo tàng"],
-    "values": ["gia đình", "sức khỏe", "an toàn tài chính"]
+    "interests": [
+      "yoga",
+      "làm bánh",
+      "bảo tàng"
+    ],
+    "values": [
+      "gia đình",
+      "sức khỏe",
+      "an toàn tài chính"
+    ]
   },
   {
     "user_id": "demo_05",
@@ -41,8 +73,16 @@
     "age": 30,
     "location": "Đà Nẵng",
     "relationship_intent": "marriage",
-    "interests": ["đạp xe", "nhiếp ảnh", "cắm trại"],
-    "values": ["trách nhiệm", "phiêu lưu", "bảo vệ môi trường"]
+    "interests": [
+      "đạp xe",
+      "nhiếp ảnh",
+      "cắm trại"
+    ],
+    "values": [
+      "trách nhiệm",
+      "phiêu lưu",
+      "bảo vệ môi trường"
+    ]
   },
   {
     "user_id": "demo_06",
@@ -50,8 +90,16 @@
     "age": 25,
     "location": "Hà Nội",
     "relationship_intent": "long_term",
-    "interests": ["nhạc cổ điển", "nấu ăn", "tình nguyện"],
-    "values": ["đồng cảm", "phát triển bản thân", "cân bằng cuộc sống"]
+    "interests": [
+      "nhạc cổ điển",
+      "nấu ăn",
+      "tình nguyện"
+    ],
+    "values": [
+      "đồng cảm",
+      "phát triển bản thân",
+      "cân bằng cuộc sống"
+    ]
   },
   {
     "user_id": "demo_07",
@@ -59,8 +107,16 @@
     "age": 29,
     "location": "TP.HCM",
     "relationship_intent": "long_term",
-    "interests": ["cà phê", "điện ảnh", "cầu lông"],
-    "values": ["tôn trọng", "trung thực", "sự nghiệp"]
+    "interests": [
+      "cà phê",
+      "điện ảnh",
+      "cầu lông"
+    ],
+    "values": [
+      "tôn trọng",
+      "trung thực",
+      "sự nghiệp"
+    ]
   },
   {
     "user_id": "demo_08",
@@ -68,8 +124,16 @@
     "age": 26,
     "location": "Đà Nẵng",
     "relationship_intent": "casual_dating",
-    "interests": ["lướt sóng", "nhiếp ảnh", "khiêu vũ"],
-    "values": ["tự do", "sức khỏe", "sáng tạo"]
+    "interests": [
+      "lướt sóng",
+      "nhiếp ảnh",
+      "khiêu vũ"
+    ],
+    "values": [
+      "tự do",
+      "sức khỏe",
+      "sáng tạo"
+    ]
   },
   {
     "user_id": "demo_09",
@@ -77,8 +141,16 @@
     "age": 31,
     "location": "Hà Nội",
     "relationship_intent": "marriage",
-    "interests": ["công nghệ", "đạp xe", "đầu tư"],
-    "values": ["trách nhiệm", "ổn định", "tham vọng"]
+    "interests": [
+      "công nghệ",
+      "đạp xe",
+      "đầu tư"
+    ],
+    "values": [
+      "trách nhiệm",
+      "ổn định",
+      "tham vọng"
+    ]
   },
   {
     "user_id": "demo_10",
@@ -86,8 +158,16 @@
     "age": 23,
     "location": "TP.HCM",
     "relationship_intent": "casual_dating",
-    "interests": ["thời trang", "hòa nhạc", "khám phá quán cà phê"],
-    "values": ["sáng tạo", "tự do", "kết nối xã hội"]
+    "interests": [
+      "thời trang",
+      "hòa nhạc",
+      "khám phá quán cà phê"
+    ],
+    "values": [
+      "sáng tạo",
+      "tự do",
+      "kết nối xã hội"
+    ]
   },
   {
     "user_id": "demo_11",
@@ -95,8 +175,16 @@
     "age": 27,
     "location": "Cần Thơ",
     "relationship_intent": "long_term",
-    "interests": ["bóng đá", "làm vườn", "nấu ăn"],
-    "values": ["gia đình", "trách nhiệm", "cân bằng cuộc sống"]
+    "interests": [
+      "bóng đá",
+      "làm vườn",
+      "nấu ăn"
+    ],
+    "values": [
+      "gia đình",
+      "trách nhiệm",
+      "cân bằng cuộc sống"
+    ]
   },
   {
     "user_id": "demo_12",
@@ -104,8 +192,16 @@
     "age": 29,
     "location": "Hà Nội",
     "relationship_intent": "marriage",
-    "interests": ["đọc sách", "thiền", "du lịch"],
-    "values": ["gia đình", "bình yên", "tôn trọng"]
+    "interests": [
+      "đọc sách",
+      "thiền",
+      "du lịch"
+    ],
+    "values": [
+      "gia đình",
+      "bình yên",
+      "tôn trọng"
+    ]
   },
   {
     "user_id": "demo_13",
@@ -113,8 +209,16 @@
     "age": 22,
     "location": "Đà Nẵng",
     "relationship_intent": "casual_dating",
-    "interests": ["đi biển", "âm nhạc", "làm gốm"],
-    "values": ["tò mò", "tự do", "sáng tạo"]
+    "interests": [
+      "đi biển",
+      "âm nhạc",
+      "làm gốm"
+    ],
+    "values": [
+      "tò mò",
+      "tự do",
+      "sáng tạo"
+    ]
   },
   {
     "user_id": "demo_14",
@@ -122,8 +226,16 @@
     "age": 32,
     "location": "TP.HCM",
     "relationship_intent": "marriage",
-    "interests": ["tập gym", "đầu tư", "cà phê"],
-    "values": ["sự nghiệp", "kỷ luật", "trách nhiệm"]
+    "interests": [
+      "tập gym",
+      "đầu tư",
+      "cà phê"
+    ],
+    "values": [
+      "sự nghiệp",
+      "kỷ luật",
+      "trách nhiệm"
+    ]
   },
   {
     "user_id": "demo_15",
@@ -131,8 +243,16 @@
     "age": 28,
     "location": "TP.HCM",
     "relationship_intent": "long_term",
-    "interests": ["chạy bộ", "phim ảnh", "tình nguyện"],
-    "values": ["tôn trọng", "phát triển bản thân", "cộng đồng"]
+    "interests": [
+      "chạy bộ",
+      "phim ảnh",
+      "tình nguyện"
+    ],
+    "values": [
+      "tôn trọng",
+      "phát triển bản thân",
+      "cộng đồng"
+    ]
   },
   {
     "user_id": "demo_16",
@@ -140,8 +260,16 @@
     "age": 25,
     "location": "Hải Phòng",
     "relationship_intent": "casual_dating",
-    "interests": ["trò chơi", "công nghệ", "thể thao điện tử"],
-    "values": ["tình bạn", "sáng tạo", "độc lập"]
+    "interests": [
+      "trò chơi",
+      "công nghệ",
+      "thể thao điện tử"
+    ],
+    "values": [
+      "tình bạn",
+      "sáng tạo",
+      "độc lập"
+    ]
   },
   {
     "user_id": "demo_17",
@@ -149,8 +277,16 @@
     "age": 30,
     "location": "Cần Thơ",
     "relationship_intent": "marriage",
-    "interests": ["làm vườn", "nấu ăn", "nhạc dân gian"],
-    "values": ["gia đình", "ổn định", "sự quan tâm"]
+    "interests": [
+      "làm vườn",
+      "nấu ăn",
+      "nhạc dân gian"
+    ],
+    "values": [
+      "gia đình",
+      "ổn định",
+      "sự quan tâm"
+    ]
   },
   {
     "user_id": "demo_18",
@@ -158,8 +294,16 @@
     "age": 24,
     "location": "Hà Nội",
     "relationship_intent": "casual_dating",
-    "interests": ["board game", "bóng đá", "ẩm thực đường phố"],
-    "values": ["hài hước", "tự do", "tình bạn"]
+    "interests": [
+      "board game",
+      "bóng đá",
+      "ẩm thực đường phố"
+    ],
+    "values": [
+      "hài hước",
+      "tự do",
+      "tình bạn"
+    ]
   },
   {
     "user_id": "demo_19",
@@ -167,8 +311,16 @@
     "age": 27,
     "location": "TP.HCM",
     "relationship_intent": "long_term",
-    "interests": ["yoga", "nấu ăn", "học ngoại ngữ"],
-    "values": ["sức khỏe", "gia đình", "tri thức"]
+    "interests": [
+      "yoga",
+      "nấu ăn",
+      "học ngoại ngữ"
+    ],
+    "values": [
+      "sức khỏe",
+      "gia đình",
+      "tri thức"
+    ]
   },
   {
     "user_id": "demo_20",
@@ -176,7 +328,77 @@
     "age": 33,
     "location": "Đà Nẵng",
     "relationship_intent": "marriage",
-    "interests": ["nhiếp ảnh", "đạp xe", "cắm trại"],
-    "values": ["trách nhiệm", "tôn trọng", "bảo vệ môi trường"]
+    "interests": [
+      "nhiếp ảnh",
+      "đạp xe",
+      "cắm trại"
+    ],
+    "values": [
+      "trách nhiệm",
+      "tôn trọng",
+      "bảo vệ môi trường"
+    ]
+  },
+  {
+    "user_id": "linh",
+    "name": "Unknown",
+    "age": 25,
+    "location": "Hà Nội",
+    "relationship_intent": "casual_dating",
+    "interests": [
+      "đọc sách",
+      "du lịch",
+      "âm nhạc"
+    ],
+    "values": [
+      "chân thành",
+      "phát triển bản thân"
+    ]
+  },
+  {
+    "user_id": "person1",
+    "name": "Alice",
+    "age": 24,
+    "location": "TP.HCM",
+    "relationship_intent": "long_term",
+    "interests": [
+      "cafe",
+      "nhiếp ảnh"
+    ],
+    "values": [
+      "tự do",
+      "sáng tạo"
+    ]
+  },
+  {
+    "user_id": "person2",
+    "name": "Bob",
+    "age": 27,
+    "location": "Đà Lạt",
+    "relationship_intent": "long_term",
+    "interests": [
+      "du lịch",
+      "phượt"
+    ],
+    "values": [
+      "phiêu lưu",
+      "gia đình"
+    ]
+  },
+  {
+    "user_id": "nguoi_dung_moi",
+    "name": "Unknown",
+    "age": 25,
+    "location": "Hà Nội",
+    "relationship_intent": "casual_dating",
+    "interests": [
+      "đọc sách",
+      "du lịch",
+      "âm nhạc"
+    ],
+    "values": [
+      "chân thành",
+      "phát triển bản thân"
+    ]
   }
 ]
