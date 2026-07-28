@@ -1,0 +1,92 @@
+﻿flowchart TD
+    %% ============================================================
+    %% HYBRID DECISION FLOWCHART — CUPID AGENT
+    %% Role 5B: Phân luồng Chatbot Path vs ReAct Agent Path
+    %% ============================================================
+
+    START([🟢 Người dùng gửi câu hỏi]) --> CLASSIFY{🔍 Phân loại\ncâu hỏi}
+
+    %% ── NHÁNH 1: CÂU HỎI ĐƠN GIẢN ──────────────────────────────
+    CLASSIFY -->|"🟢 Đơn giản\n(Kiến thức chung\nhoặc sáng tạo văn bản)"| CHATBOT_PATH
+
+    subgraph CHATBOT_PATH ["🤖 CHATBOT PATH (Cấp 2 — LLM Only)"]
+        direction TB
+        CB1["📝 Gửi thẳng tới LLM\nvới CHATBOT_BASELINE_PROMPT"]
+        CB2["💬 LLM sinh câu trả lời\ndựa trên kiến thức có sẵn"]
+        CB3(["✅ Trả lời ngay\ncho người dùng"])
+        CB1 --> CB2 --> CB3
+    end
+
+    %% Ví dụ Chatbot Path
+    CHATBOT_PATH -.->|"Ví dụ TC#1:\n5 tiêu chí tương thích"| EX_CB1["🗨️ Giải thích 5 tiêu chí:\nSở thích, Giá trị sống,\nMục tiêu, Giao tiếp, EQ"]
+    CHATBOT_PATH -.->|"Ví dụ TC#2:\nViết tin nhắn mở đầu"| EX_CB2["🗨️ Tạo tin nhắn thân thiện\nbám theo sở thích người dùng"]
+
+    %% ── NHÁNH 2: CÂU HỎI PHỨC TẠP ─────────────────────────────
+    CLASSIFY -->|"🟡 Phức tạp\n(Cần dữ liệu hồ sơ\nhoặc tính điểm)"| REACT_PATH
+
+    subgraph REACT_PATH ["🧠 REACT AGENT PATH (Cấp 3 — Thought → Action → Observation)"]
+        direction TB
+        RA1["🧠 Thought:\nAgent suy luận bước tiếp theo"]
+        RA2{{"🛠️ Action:\nGọi Tool phù hợp"}}
+        RA3["👁️ Observation:\nNhận kết quả từ Tool"]
+        RA4{Đủ thông tin\nđể trả lời?}
+        RA5(["✅ Final Answer\ncho người dùng"])
+        GUARD["🛡️ GUARDRAIL:\nMAX_ITERATIONS = 4\nDừng vòng lặp an toàn"]
+
+        RA1 --> RA2 --> RA3 --> RA4
+        RA4 -->|Chưa đủ| RA1
+        RA4 -->|Đã đủ| RA5
+        RA4 -->|Vượt giới hạn| GUARD --> RA5
+    end
+
+    %% ── TOOLS CÓ THỂ GỌI ───────────────────────────────────────
+    subgraph TOOLS ["🧰 Available Tools (src/tools.py)"]
+        direction LR
+        T1["💾 save_user_profile\nLưu hồ sơ người dùng"]
+        T2["📋 get_user_profile\nĐọc lại hồ sơ đã lưu"]
+        T3["🔍 find_demo_matches\nTìm & xếp hạng ứng viên"]
+        T4["📊 generate_match_explanation\nGiải thích độ tương thích"]
+    end
+
+    RA2 --> T1
+    RA2 --> T2
+    RA2 --> T3
+    RA2 --> T4
+    T1 & T2 & T3 & T4 --> RA3
+
+    %% Ví dụ ReAct Path
+    REACT_PATH -.->|"TC#3: Lưu hồ sơ\n& xác nhận"| EX_RA1["save_user_profile\n→ get_user_profile\n(2 tool calls)"]
+    REACT_PATH -.->|"TC#4: Tìm 3 ứng viên\n& giải thích"| EX_RA2["save → find_matches\n→ explain ×3\n(5 tool calls)"]
+
+    %% ── NHÁNH 3: EDGE CASE / GUARDRAIL ─────────────────────────
+    CLASSIFY -->|"🔴 Edge Case\n(Vi phạm bảo mật\nhoặc input không hợp lệ)"| GUARD_PATH
+
+    subgraph GUARD_PATH ["🛡️ GUARDRAIL PATH — Từ chối an toàn"]
+        direction TB
+        G1["⚠️ Phát hiện vi phạm:\n• Tuổi < 18\n• Intent không hợp lệ\n• Yêu cầu dữ liệu riêng tư"]
+        G2["🚫 Từ chối xử lý\nKhông gọi bất kỳ Tool nào"]
+        G3(["💬 Trả lời giải thích lỗi\n& hướng dẫn cách đúng"])
+        G1 --> G2 --> G3
+    end
+
+    GUARD_PATH -.->|"TC#5: Tuổi 16\nlocation trống\nintent sai"| EX_G1["Agent từ chối trước\nKhông gọi Tool\n(0 tool calls)"]
+
+    %% ── STYLING ─────────────────────────────────────────────────
+    style START fill:#22c55e,color:#fff,stroke:#16a34a
+    style CLASSIFY fill:#f59e0b,color:#fff,stroke:#d97706
+
+    style CHATBOT_PATH fill:#dbeafe,stroke:#3b82f6
+    style REACT_PATH fill:#fef3c7,stroke:#f59e0b
+    style GUARD_PATH fill:#fee2e2,stroke:#ef4444
+    style TOOLS fill:#f0fdf4,stroke:#22c55e
+
+    style CB3 fill:#3b82f6,color:#fff
+    style RA5 fill:#f59e0b,color:#fff
+    style G3 fill:#ef4444,color:#fff
+    style GUARD fill:#dc2626,color:#fff
+
+    style EX_CB1 fill:#eff6ff,stroke:#93c5fd,stroke-dasharray:5 5
+    style EX_CB2 fill:#eff6ff,stroke:#93c5fd,stroke-dasharray:5 5
+    style EX_RA1 fill:#fffbeb,stroke:#fcd34d,stroke-dasharray:5 5
+    style EX_RA2 fill:#fffbeb,stroke:#fcd34d,stroke-dasharray:5 5
+    style EX_G1 fill:#fff1f2,stroke:#fca5a5,stroke-dasharray:5 5
