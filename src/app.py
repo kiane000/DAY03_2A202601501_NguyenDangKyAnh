@@ -196,7 +196,7 @@ if __name__ == "__main__":
     print(f"✅ Đã tải thành công {len(tests)} Test Cases từ config/test_cases.json\n")
     
     # Test số 4 phù hợp với luồng tìm top 3 ứng viên của bộ tools hiện tại.
-    sample_query = tests[3]["question"]
+    sample_query = tests[2]["question"]
     
     print("--- DEMO 1: CHẠY TRÊN CHATBOT BASELINE ---")
     run_baseline_chatbot(sample_query, provider)

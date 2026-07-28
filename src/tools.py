@@ -13,8 +13,12 @@ from __future__ import annotations
 
 import json
 import unicodedata
+from functools import wraps
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
+
+
+ToolResult = dict[str, Any] | str
 
 
 # ---------------------------------------------------------------------------
@@ -34,6 +38,25 @@ _REQUIRED_DEMO_FIELDS = {
     "values",
 }
 _SUPPORTED_INTENTS = {"casual_dating", "long_term", "marriage"}
+
+
+def _return_error_message(
+    tool_function: Callable[..., dict[str, Any]],
+) -> Callable[..., ToolResult]:
+    """
+    Biến lỗi input dự kiến thành Observation dạng chuỗi để Agent không bị crash.
+
+    Lỗi lập trình ngoài các nhóm TypeError/ValueError vẫn được raise để không che
+    giấu bug trong quá trình phát triển.
+    """
+    @wraps(tool_function)
+    def safe_tool(*args: Any, **kwargs: Any) -> ToolResult:
+        try:
+            return tool_function(*args, **kwargs)
+        except (TypeError, ValueError) as exc:
+            return f"LỖI [{tool_function.__name__}]: {exc}"
+
+    return safe_tool
 
 
 def _load_demo_profiles(path: Path = DEMO_PROFILE_PATH) -> tuple[dict[str, Any], ...]:
@@ -236,6 +259,7 @@ def _score_candidate(
 # Tools chính cho Cupid Agent
 # ---------------------------------------------------------------------------
 
+@_return_error_message
 def save_user_profile(
     age: int,
     location: str,
@@ -243,7 +267,7 @@ def save_user_profile(
     interests: list[str] | str,
     values: list[str] | str,
     user_id: str,
-) -> dict[str, Any]:
+) -> ToolResult:
     """
     Lưu hồ sơ tối thiểu của người đang sử dụng Cupid Agent vào bộ nhớ phiên.
 
@@ -256,7 +280,8 @@ def save_user_profile(
         user_id: ID duy nhất dùng để lưu và truy xuất riêng hồ sơ.
 
     Returns:
-        Hồ sơ đã chuẩn hóa và trạng thái sẵn sàng ghép đôi.
+        Thành công: dict chứa hồ sơ đã chuẩn hóa và trạng thái matching.
+        Thất bại: chuỗi "LỖI [save_user_profile]: ..." để Agent quan sát.
 
     Agent Call Trigger:
         Gọi sau khi người dùng đã cung cấp đủ 5 nhóm thông tin bắt buộc.
@@ -297,7 +322,8 @@ def save_user_profile(
     }
 
 
-def get_user_profile(user_id: str) -> dict[str, Any]:
+@_return_error_message
+def get_user_profile(user_id: str) -> ToolResult:
     """
     Lấy một hồ sơ đã lưu theo user_id.
 
@@ -305,7 +331,8 @@ def get_user_profile(user_id: str) -> dict[str, Any]:
         user_id: ID duy nhất của hồ sơ cần lấy.
 
     Returns:
-        Bản sao hồ sơ để bên gọi không thể vô tình sửa dữ liệu trong kho.
+        Thành công: dict chứa bản sao hồ sơ.
+        Thất bại: chuỗi "LỖI [get_user_profile]: ..." để Agent quan sát.
 
     Agent Call Trigger:
         Gọi trước khi matching hoặc khi cần kiểm tra thông tin đã thu thập.
@@ -324,12 +351,13 @@ def get_user_profile(user_id: str) -> dict[str, Any]:
     }
 
 
+@_return_error_message
 def find_demo_matches(
     user_id: str,
     limit: int = 3,
     min_age: int | None = None,
     max_age: int | None = None,
-) -> dict[str, Any]:
+) -> ToolResult:
     """
     Lọc, chấm điểm và trả về các hồ sơ giả lập phù hợp nhất.
 
@@ -340,7 +368,8 @@ def find_demo_matches(
         max_age: Tuổi ứng viên tối đa, optional.
 
     Returns:
-        Danh sách ứng viên xếp theo điểm giảm dần và chênh lệch tuổi tăng dần.
+        Thành công: dict chứa danh sách ứng viên đã xếp hạng.
+        Thất bại: chuỗi "LỖI [find_demo_matches]: ..." để Agent quan sát.
 
     Agent Call Trigger:
         Gọi khi người dùng yêu cầu tìm người phù hợp và hồ sơ đã được lưu.
@@ -389,10 +418,11 @@ def find_demo_matches(
     }
 
 
+@_return_error_message
 def generate_match_explanation(
     candidate_user_id: str,
     user_id: str,
-) -> dict[str, Any]:
+) -> ToolResult:
     """
     Tạo phần giải thích có cấu trúc cho một cặp ghép đôi.
 
@@ -401,7 +431,8 @@ def generate_match_explanation(
         user_id: ID hồ sơ người dùng hiện tại.
 
     Returns:
-        Điểm số, điểm mạnh, khác biệt và câu hỏi mở đầu gợi ý.
+        Thành công: dict chứa điểm, điểm mạnh, khác biệt và câu hỏi gợi ý.
+        Thất bại: chuỗi "LỖI [generate_match_explanation]: ..." để Agent quan sát.
 
     Agent Call Trigger:
         Gọi khi người dùng chọn một ứng viên hoặc hỏi vì sao hai người phù hợp.
@@ -612,6 +643,6 @@ def search_flights(origin: str, destination: str) -> str:
     )
 
 
-def tool_result_to_json(result: dict[str, Any]) -> str:
+def tool_result_to_json(result: ToolResult) -> str:
     """Chuyển kết quả tool sang JSON Unicode để in trong ReAct Observation."""
     return json.dumps(result, ensure_ascii=False, indent=2)
