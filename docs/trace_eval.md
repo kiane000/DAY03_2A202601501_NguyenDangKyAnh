@@ -133,3 +133,149 @@
 > 🔑 **Kết luận chính**: GPT-4o-mini **KHÔNG ảo giác** trong test này (trung thực từ chối khi không có dữ liệu). Tuy nhiên, TC #3 và TC #4 vẫn là **FAIL hoàn toàn** vì chatbot **không thể thực hiện được nhiệm vụ** — người dùng không nhận được câu trả lời có giá trị. Đây chính là bằng chứng rõ ràng nhất cho thấy **Cupid Agent PHẢI dùng ReAct Agent với Tools**.
 
 ---
+---
+
+## 🔁 5. TRACE LOG REACT AGENT THỰC TẾ (GPT-4o-mini + Function Calling)
+
+> ⚙️ **Cấu hình**: Model `gpt-4o-mini` | OpenAI Function Calling API | Tools: `save_user_profile`, `find_demo_matches`, `generate_match_explanation`
+> 📅 **Thời gian chạy thực tế**: 2026-07-28
+
+---
+
+### 🧪 TEST CASE #4 — Trace Hoàn Chỉnh (Cần gọi 3 Tools)
+
+**Câu hỏi**: *"Tôi tên Khánh Linh, 24 tuổi, TP.HCM, thích âm nhạc/phim ảnh/trò chơi, coi trọng tự do và sáng tạo, muốn hẹn hò nhẹ nhàng. Hãy lưu hồ sơ và tìm 3 ứng viên phù hợp nhất, giải thích lý do cho ứng viên số 1."*
+
+---
+
+#### 🔄 Bước 1/4 — Lưu hồ sơ
+
+**🧠 Thought**: [Agent chọn gọi Tool trực tiếp — không cần suy luận thêm]
+
+**🛠️ Action**:
+```
+save_user_profile(age=24, location="TP.HCM", relationship_intent="casual_dating",
+                  interests=["âm nhạc", "phim ảnh", "trò chơi"],
+                  values=["tự do", "sáng tạo"], user_id="Khánh Linh")
+```
+
+**👁️ Observation**:
+```json
+{
+  "success": true,
+  "matching_ready": true,
+  "profile": {
+    "user_id": "Khánh Linh",
+    "age": 24,
+    "location": "TP.HCM",
+    "relationship_intent": "casual_dating",
+    "interests": ["âm nhạc", "phim ảnh", "trò chơi"],
+    "values": ["tự do", "sáng tạo"]
+  },
+  "message": "Đã lưu riêng hồ sơ. Có thể gọi find_demo_matches."
+}
+```
+
+---
+
+#### 🔄 Bước 2/4 — Tìm ứng viên phù hợp
+
+**🧠 Thought**: [Agent chọn gọi Tool trực tiếp]
+
+**🛠️ Action**:
+```
+find_demo_matches(user_id="Khánh Linh", limit=3)
+```
+
+**👁️ Observation** (kết quả thực tế từ 20 hồ sơ demo):
+```json
+{
+  "total_candidates": 20,
+  "matches": [
+    {
+      "name": "Bảo Trâm", "age": 23, "location": "TP.HCM",
+      "relationship_intent": "casual_dating",
+      "score": 80,
+      "score_breakdown": {"relationship_intent": 40, "location": 20, "interests": 0, "values": 20},
+      "shared_values": ["tự do", "sáng tạo"]
+    },
+    {
+      "name": "Khánh Linh (demo_02)", "age": 24, "location": "TP.HCM",
+      "relationship_intent": "casual_dating",
+      "score": 70,
+      "shared_values": ["tự do"]
+    },
+    {
+      "name": "Gia Hân", "age": 22, "location": "Đà Nẵng",
+      "relationship_intent": "casual_dating",
+      "score": 70,
+      "shared_interests": ["âm nhạc"],
+      "shared_values": ["tự do", "sáng tạo"]
+    }
+  ]
+}
+```
+
+---
+
+#### 🔄 Bước 3/4 — Giải thích chi tiết ứng viên #1
+
+**🧠 Thought**: [Agent chọn gọi Tool trực tiếp]
+
+**🛠️ Action**:
+```
+generate_match_explanation(candidate_user_id="demo_10", user_id="Khánh Linh")
+```
+
+**👁️ Observation**:
+```json
+{
+  "candidate_name": "Bảo Trâm",
+  "score": 80,
+  "score_label": "phù hợp cao",
+  "strengths": [
+    "Hai bạn có cùng định hướng mối quan hệ.",
+    "Hai bạn đang ở cùng khu vực.",
+    "Giá trị sống chung: tự do, sáng tạo."
+  ],
+  "differences": ["Chưa tìm thấy sở thích chung trong dữ liệu demo."],
+  "suggested_question": "Bạn thích điều gì nhất ở hoạt động thời trang?",
+  "disclaimer": "Điểm số chỉ dựa trên dữ liệu giả lập và là thông tin tham khảo."
+}
+```
+
+---
+
+#### 🏁 Bước 4/4 — Final Answer
+
+**🧠 Thought**: Tôi đã lưu hồ sơ của Khánh Linh và tìm thấy 3 ứng viên phù hợp nhất. Bây giờ tôi sẽ giải thích lý do phù hợp cho ứng viên đầu tiên là Bảo Trâm.
+
+**✅ Final Answer**:
+> Tôi đã lưu hồ sơ của bạn và tìm thấy 3 ứng viên phù hợp nhất:
+>
+> 🥇 **Bảo Trâm** (23 tuổi, TP.HCM) — Điểm: **80/100** (phù hợp cao)
+> 🥈 **Khánh Linh** (24 tuổi, TP.HCM) — Điểm: **70/100**
+> 🥉 **Gia Hân** (22 tuổi, Đà Nẵng) — Điểm: **70/100**
+>
+> **Lý do Bảo Trâm phù hợp nhất**:
+> 1. Cùng định hướng hẹn hò (casual_dating)
+> 2. Cùng khu vực TP.HCM
+> 3. Cùng giá trị sống: tự do và sáng tạo
+>
+> *Disclaimer: Điểm số chỉ dựa trên dữ liệu giả lập.*
+
+---
+
+### 📊 Phân tích Guardrail — Kết quả Quan sát
+
+| Tiêu chí Guardrail | Kết quả |
+| :--- | :---: |
+| Số vòng lặp thực tế / MAX_ITERATIONS (4) | `3/4` ✅ |
+| Agent có tự bịa điểm số không? | ❌ Không — điểm lấy từ Tool |
+| Agent có vượt quá giới hạn vòng lặp không? | ❌ Không — dừng sau 4 bước |
+| Kết quả có căn cứ từ dữ liệu demo thực? | ✅ Có (20 hồ sơ từ demo_profiles.json) |
+
+---
+
+*🤖 Trace được thu thập THỰC TẾ: GPT-4o-mini via OpenAI Function Calling API*
+*🗓️ 2026-07-28 | Role 5 — Observability & Reviewer*
