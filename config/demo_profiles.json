@@ -386,6 +386,22 @@
     ]
   },
   {
+    "user_id": "hello",
+    "name": "Unknown",
+    "age": 25,
+    "location": "Hà Nội",
+    "relationship_intent": "long_term",
+    "interests": [
+      "đọc sách",
+      "du lịch",
+      "âm nhạc"
+    ],
+    "values": [
+      "chân thành",
+      "phát triển bản thân"
+    ]
+  },
+  {
     "user_id": "nguoi_dung_moi",
     "name": "Unknown",
     "age": 25,
@@ -398,6 +414,23 @@
     ],
     "values": [
       "chân thành",
+      "phát triển bản thân"
+    ]
+  },
+  {
+    "user_id": "Linh",
+    "name": "Unknown",
+    "age": 25,
+    "location": "TP.HCM",
+    "relationship_intent": "long_term",
+    "interests": [
+      "du lịch",
+      "nấu ăn",
+      "chạy bộ"
+    ],
+    "values": [
+      "gia đình",
+      "trung thực",
       "phát triển bản thân"
     ]
   }
