@@ -88,6 +88,6 @@ REACT_SYSTEM_PROMPT = build_react_prompt_from_tools()
 CUPID_AGENT_SYSTEM_PROMPT = REACT_SYSTEM_PROMPT
 
 # 🛡️ GUARDRAILS CONFIGURATION (PHANH AN TOÀN)
-MAX_ITERATIONS = 4      # Giới hạn tối đa 4 vòng lặp Thought-Action để tránh lặp vô tận
+MAX_ITERATIONS = 8      # Đủ cho save -> find -> giải thích top 3 -> final, vẫn chặn loop
 TIMEOUT_SECONDS = 15    # Timeout tối đa cho mỗi lượt xử lý
 

@@ -20,7 +20,7 @@
   {
     "id": 4,
     "category": "🟡 Multi-step (Cần gọi 3 Tools)",
-    "question": "Dùng hồ sơ Linh đã cung cấp để tìm 3 ứng viên phù hợp nhất, xếp hạng theo điểm và giải thích lý do phù hợp của từng người.",
+    "question": "Tôi là Linh, 25 tuổi, sống tại TP.HCM, muốn mối quan hệ lâu dài, thích du lịch, nấu ăn, chạy bộ và coi trọng gia đình, trung thực, phát triển bản thân. Hãy tìm 3 ứng viên phù hợp nhất, xếp hạng theo điểm và giải thích lý do phù hợp của từng người.",
     "expected_behavior": "Agent gọi save_user_profile nếu hồ sơ chưa có, gọi find_demo_matches với limit 3, rồi gọi generate_match_explanation cho từng ứng viên; điểm báo cáo phải giữ nguyên từ kết quả matching."
   },
   {
