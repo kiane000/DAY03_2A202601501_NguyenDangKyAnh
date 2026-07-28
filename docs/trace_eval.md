@@ -138,14 +138,11 @@
 
 ---
 
-## 🔁 5. TRACE LOG REACT AGENT THỰC TẾ (GPT-4o-mini + OpenAI Function Calling)
-
-> ⚙️ **Cấu hình**: Model `gpt-4o-mini` | OpenAI Function Calling API thật
-> 📅 **Thời gian chạy**: 2026-07-28 | Script: `run_react_agent.py`
+## 🔁 5. TRACE LOG REACT AGENT THỰC TẾ 
 
 ---
 
-### 🧪 TEST CASE #3 — Trace Hoàn Chỉnh ✅ PASS (2 Tool calls)
+### 🧪 TEST CASE #3 — Trace Hoàn Chỉnh ✅ PASS
 
 **Câu hỏi**: *"Tôi là Linh, 25 tuổi, sống tại TP.HCM, muốn mối quan hệ lâu dài, thích du lịch, nấu ăn, chạy bộ và coi trọng gia đình, trung thực, phát triển bản thân. Hãy lưu hồ sơ rồi đọc lại để tôi xác nhận."*
 
@@ -217,7 +214,7 @@ get_user_profile(user_id="Linh")
 
 ---
 
-### 🧪 TEST CASE #4 — Trace Hoàn Chỉnh ✅ PASS (5 Tool calls)
+### 🧪 TEST CASE #4 — Trace Hoàn Chỉnh ✅ PASS 
 
 **Câu hỏi**: *"Tôi là Linh, 25 tuổi, TP.HCM, long_term, thích du lịch/nấu ăn/chạy bộ, coi trọng gia đình/trung thực/phát triển bản thân. Tìm 3 ứng viên phù hợp nhất và giải thích lý do từng người."*
 
@@ -234,7 +231,7 @@ get_user_profile(user_id="Linh")
 
 **🛠️ Action**: `find_demo_matches(user_id="Linh", limit=3)`
 
-**👁️ Observation** (kết quả thật từ 20 hồ sơ demo):
+**👁️ Observation**:
 ```json
 {
   "total_candidates": 20,
@@ -274,8 +271,6 @@ get_user_profile(user_id="Linh")
 > 🥈 **Kim Ngân** (27 tuổi, TP.HCM) — **80/100** | Cùng long_term + cùng khu vực + sở thích nấu ăn + giá trị gia đình
 > 🥉 **Thanh Thảo** (28 tuổi, TP.HCM) — **80/100** | Cùng long_term + cùng khu vực + sở thích chạy bộ + giá trị phát triển bản thân
 
-*Disclaimer: Điểm số chỉ dựa trên dữ liệu giả lập và là thông tin tham khảo.*
-
 ---
 
 ### 🧪 TEST CASE #5 — Edge Case Guardrail ✅ PASS (0 Tool calls — Agent tự nhận diện lỗi)
@@ -290,20 +285,4 @@ get_user_profile(user_id="Linh")
 > Tuổi phải từ 18 trở lên để tôi có thể lưu hồ sơ cho bạn. Vui lòng cung cấp tuổi hợp lệ cùng với thông tin địa điểm.
 
 ✅ **Đánh giá Guardrail**: Agent nhận diện input không hợp lệ TRƯỚC khi gọi Tool (không tốn API call không cần thiết). Nếu cố gọi Tool, `save_user_profile` sẽ trả về `LỖI [save_user_profile]: age phải là số nguyên từ 18 đến 100.` — tức Guardrail hoạt động ở cả 2 tầng: LLM reasoning + Python validation.
-
----
-
-### 📊 Tổng kết Guardrail thực tế
-
-| TC | Tool calls thật | Guardrail | Kết quả |
-|:---:|:---|:---:|:---:|
-| TC#3 | `save_user_profile` → `get_user_profile` (2 calls) | ✅ Dữ liệu khớp | **PASS** |
-| TC#4 | `save` → `find_matches` → `explain` x3 (5 calls) | ✅ Điểm từ Tool, không bịa | **PASS** |
-| TC#5 | 0 calls — Agent từ chối trước | ✅ Guardrail LLM + Python | **PASS** |
-
-> 🔑 **Điểm nổi bật**: Minh Anh đạt **100/100** — điểm tuyệt đối vì cùng `long_term` (+40) + cùng `TP.HCM` (+20) + 2 sở thích chung (+20) + 2 giá trị chung (+20). Điểm này do **Python tính toán thật**, không phải LLM bịa ra.
-
----
-
-*🤖 Trace thu thập THỰC TẾ: GPT-4o-mini via OpenAI Function Calling API*
-*🗓️ 2026-07-28 | Role 5 — Observability & Reviewer*
+ 
